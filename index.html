@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研究筆記 — Research Notes</title>
+<style>
+  :root {
+    --bg: #07090f;
+    --panel: #0f1320;
+    --panel2: #141a2b;
+    --tx: #eef2ff;
+    --sub: #a8b8d0;
+    --mute: #7a8fa8;
+    --gold: #f5a623;
+    --green: #2ed68a;
+    --red: #f06060;
+    --blue: #4da8f8;
+    --purple: #b87aff;
+    --border: rgba(168, 184, 208, 0.15);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: "Microsoft JhengHei", "微軟正黑體", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 28px 60px; }
+
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 22px;
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: 32px;
+    margin: 0 0 6px;
+    color: var(--tx);
+    letter-spacing: 0.5px;
+  }
+  .hero .subtitle {
+    color: var(--sub);
+    font-size: 16px;
+    margin: 0;
+  }
+  .hero .meta {
+    color: var(--mute);
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  /* 工具列 */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--tx);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 10px 14px 10px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-box input:focus { border-color: var(--gold); }
+  .search-box input::placeholder { color: var(--mute); }
+  .search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    font-size: 14px;
+  }
+
+  .tag-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tag-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--sub);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tag-btn:hover { border-color: var(--gold); color: var(--tx); }
+  .tag-btn.active {
+    background: rgba(245, 166, 35, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* 卡片網格 */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    min-height: 160px;
+  }
+  .card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 166, 35, 0.08);
+  }
+  .card .date {
+    color: var(--mute);
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .card .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tx);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .card .summary {
+    color: var(--sub);
+    font-size: 14px;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 12px;
+  }
+  .card .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .card .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--panel2);
+    color: var(--mute);
+    border: 1px solid var(--border);
+  }
+  .card .tag.dram { color: var(--gold); border-color: rgba(245, 166, 35, 0.3); }
+  .card .tag.semi { color: var(--blue); border-color: rgba(77, 168, 248, 0.3); }
+  .card .tag.dcf { color: var(--purple); border-color: rgba(184, 122, 255, 0.3); }
+  .card .tag.taiwan { color: var(--green); border-color: rgba(46, 214, 138, 0.3); }
+  .card .tag.us { color: var(--red); border-color: rgba(240, 96, 96, 0.3); }
+
+  .empty {
+    text-align: center;
+    color: var(--mute);
+    padding: 60px 20px;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+  }
+
+  .stats {
+    color: var(--mute);
+    font-size: 14px;
+    margin: 12px 0 18px;
+  }
+  .stats strong { color: var(--gold); }
+
+  .footnote {
+    color: var(--mute);
+    font-size: 13px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .footnote a { color: var(--sub); text-decoration: none; }
+  .footnote a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <h1>研究筆記</h1>
+    <p class="subtitle">Investment Research · Semiconductor & AI Supply Chain</p>
+    <p class="meta">DCF 估值 · 半導體供應鏈 · DRAM/NAND · 台股 AI 概念</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <input type="text" id="search" placeholder="搜尋報告標題、摘要、tag...">
+    </div>
+    <div class="tag-filters" id="tagFilters">
+      <button class="tag-btn active" data-tag="all">全部</button>
+      <!-- tag buttons 由 JS 動態產生 -->
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="grid" id="grid">
+    <!-- 卡片由 JS 從 reports.json 動態產生 -->
+  </div>
+
+  <p class="footnote">
+    本站由 GitHub Pages 託管 · 資料來源為公開資訊整理 · 非投資建議
+  </p>
+
+</div>
+
+<script>
+let allReports = [];
+let activeTag = "all";
+let searchKeyword = "";
+
+const tagLabels = {
+  dram: "DRAM",
+  semi: "半導體",
+  dcf: "DCF 估值",
+  taiwan: "台股",
+  us: "美股",
+  ai: "AI 供應鏈",
+  earnings: "財報",
+  macro: "總經"
+};
+
+async function loadReports() {
+  try {
+    const resp = await fetch("reports.json");
+    const data = await resp.json();
+    // 依日期降序
+    allReports = data.sort((a, b) => b.date.localeCompare(a.date));
+    renderTagFilters();
+    renderGrid();
+  } catch (e) {
+    document.getElementById("grid").innerHTML =
+      '<div class="empty">無法載入 reports.json,請確認檔案存在於 repo 根目錄。</div>';
+  }
+}
+
+function renderTagFilters() {
+  const allTags = new Set();
+  allReports.forEach(r => (r.tags || []).forEach(t => allTags.add(t)));
+  const container = document.getElementById("tagFilters");
+  // 保留「全部」按鈕,附加 tag 按鈕
+  [...allTags].sort().forEach(tag => {
+    const btn = document.createElement("button");
+    btn.className = "tag-btn";
+    btn.dataset.tag = tag;
+    btn.textContent = tagLabels[tag] || tag;
+    btn.onclick = () => {
+      activeTag = tag;
+      document.querySelectorAll(".tag-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderGrid();
+    };
+    container.appendChild(btn);
+  });
+  // 「全部」按鈕事件
+  document.querySelector('.tag-btn[data-tag="all"]').onclick = () => {
+    activeTag = "all";
+    document.querySelectorAll(".tag-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector('.tag-btn[data-tag="all"]').classList.add("active");
+    renderGrid();
+  };
+}
+
+function renderGrid() {
+  const filtered = allReports.filter(r => {
+    const tagMatch = activeTag === "all" || (r.tags || []).includes(activeTag);
+    const kw = searchKeyword.toLowerCase().trim();
+    const kwMatch = !kw ||
+      r.title.toLowerCase().includes(kw) ||
+      (r.summary || "").toLowerCase().includes(kw) ||
+      (r.tags || []).some(t => t.toLowerCase().includes(kw));
+    return tagMatch && kwMatch;
+  });
+
+  document.getElementById("stats").innerHTML =
+    `共 <strong>${filtered.length}</strong> 篇報告` +
+    (activeTag !== "all" ? ` · 篩選 tag: <strong>${tagLabels[activeTag] || activeTag}</strong>` : "") +
+    (searchKeyword ? ` · 關鍵字: <strong>${searchKeyword}</strong>` : "");
+
+  const grid = document.getElementById("grid");
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">沒有符合條件的報告。</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => `
+    <a class="card" href="reports/${r.file}">
+      <div class="date">${r.date}</div>
+      <div class="title">${r.title}</div>
+      <div class="summary">${r.summary || ""}</div>
+      <div class="tags">
+        ${(r.tags || []).map(t =>
+          `<span class="tag ${t}">${tagLabels[t] || t}</span>`
+        ).join("")}
+      </div>
+    </a>
+  `).join("");
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  searchKeyword = e.target.value;
+  renderGrid();
+});
+
+loadReports();
+</script>
+
+</body>
+</html>
