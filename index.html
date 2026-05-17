@@ -7,22 +7,22 @@
 <title>RRL — PIP-BOY 3000 // ROBCO TERMLINK</title>
 <style>
   :root {
-    /* Pip-Boy 配色 */
-    --bg: #0a1206;
-    --bg2: #0c1808;
-    --crt-green: #4ade80;
-    --crt-green-bright: #86efac;
-    --crt-green-dim: #2d8d4f;
-    --crt-green-dark: #1a4d2e;
-    --crt-amber: #fbbf24;
-    --crt-red: #ef4444;
-    --tx: #4ade80;
-    --tx-bright: #bbf7d0;
-    --tx-dim: #2d8d4f;
-    --tx-dark: #1f5a35;
-    --border: rgba(74, 222, 128, 0.25);
-    --border-bright: rgba(74, 222, 128, 0.6);
-    --scanline: rgba(74, 222, 128, 0.06);
+    /* 黑白終端機配色 */
+    --bg: #08090b;
+    --bg2: #0d0f12;
+    --crt-green: #e5e7eb;
+    --crt-green-bright: #ffffff;
+    --crt-green-dim: #9ca3af;
+    --crt-green-dark: #4b5563;
+    --crt-amber: #ffffff;
+    --crt-red: #d4d4d4;
+    --tx: #d4d4d4;
+    --tx-bright: #ffffff;
+    --tx-dim: #9ca3af;
+    --tx-dark: #6b7280;
+    --border: rgba(229, 231, 235, 0.2);
+    --border-bright: rgba(229, 231, 235, 0.5);
+    --scanline: rgba(229, 231, 235, 0.02);
   }
 
   * { box-sizing: border-box; }
@@ -69,21 +69,15 @@
     top: 0; left: 0; right: 0; bottom: 0;
     background:
       radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%),
-      radial-gradient(ellipse at center, rgba(74, 222, 128, 0.04) 0%, transparent 70%);
+      radial-gradient(ellipse at center, rgba(229, 231, 235, 0.04) 0%, transparent 70%);
     pointer-events: none;
     z-index: 9999;
   }
 
-  /* CRT 整體輕微閃爍 */
+  /* 移除整頁閃爍以利長時間閱讀 */
   @keyframes crtFlicker {
-    0% { opacity: 1; }
-    50% { opacity: 0.98; }
-    51% { opacity: 1; }
-    52% { opacity: 0.96; }
-    53% { opacity: 1; }
-    100% { opacity: 1; }
+    0%, 100% { opacity: 1; }
   }
-  body { animation: crtFlicker 6s infinite; }
 
   h1, h2, h3, h4, h5, h6, p, div, span, a, button, input, label, td, th {
     font-weight: 700 !important;
@@ -91,12 +85,9 @@
   }
   .mono { font-family: "Consolas", "Courier New", monospace !important; letter-spacing: 0.5px; }
 
-  /* 全站文字綠色發光 */
+  /* 全站文字保持銳利,不加光暈 */
   body, h1, h2, h3, p, span, div, a, button, input, td, th {
-    text-shadow:
-      0 0 1px var(--crt-green-bright),
-      0 0 3px rgba(74, 222, 128, 0.6),
-      0 0 8px rgba(74, 222, 128, 0.3);
+    text-shadow: none;
   }
 
   /* ============ 頂部 ROBCO 標頭 ============ */
@@ -170,8 +161,8 @@
     margin-bottom: 18px;
     position: relative;
     box-shadow:
-      inset 0 0 30px rgba(74, 222, 128, 0.08),
-      0 0 20px rgba(74, 222, 128, 0.15);
+      inset 0 0 30px rgba(229, 231, 235, 0.08),
+      0 0 20px rgba(229, 231, 235, 0.15);
   }
   .hero::before {
     content: "// VERSION 3.0";
@@ -205,15 +196,6 @@
     color: var(--crt-green-bright);
     letter-spacing: 6px;
     font-family: "Consolas", monospace !important;
-    text-shadow:
-      0 0 4px var(--crt-green-bright),
-      0 0 12px var(--crt-green),
-      0 0 24px var(--crt-green-dim);
-    animation: titlePulse 3s ease-in-out infinite;
-  }
-  @keyframes titlePulse {
-    0%, 100% { text-shadow: 0 0 4px var(--crt-green-bright), 0 0 12px var(--crt-green), 0 0 24px var(--crt-green-dim); }
-    50% { text-shadow: 0 0 6px var(--crt-green-bright), 0 0 18px var(--crt-green), 0 0 36px var(--crt-green-dim); }
   }
   .hero .subtitle {
     color: var(--tx-dim);
@@ -281,11 +263,10 @@
     transition: all 0.2s;
     letter-spacing: 1px;
     font-family: "Consolas", monospace !important;
-    text-shadow: 0 0 4px var(--crt-green);
   }
   .search-box input:focus {
     border-color: var(--crt-green);
-    box-shadow: 0 0 0 1px var(--crt-green), 0 0 16px rgba(74, 222, 128, 0.4);
+    box-shadow: 0 0 0 1px var(--crt-green), 0 0 16px rgba(229, 231, 235, 0.4);
   }
   .search-box input::placeholder { color: var(--tx-dark); }
   .search-box::before {
@@ -324,8 +305,8 @@
   .tag-btn:hover {
     border-color: var(--crt-green);
     color: var(--crt-green-bright);
-    background: rgba(74, 222, 128, 0.08);
-    box-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+    background: rgba(229, 231, 235, 0.08);
+    box-shadow: 0 0 8px rgba(229, 231, 235, 0.3);
   }
   .tag-btn.active {
     background: var(--crt-green);
@@ -427,11 +408,11 @@
   .card:hover {
     transform: translateY(-2px);
     border-color: var(--crt-green-bright);
-    background: rgba(74, 222, 128, 0.05);
+    background: rgba(229, 231, 235, 0.05);
     box-shadow:
       0 0 0 1px var(--crt-green),
-      0 0 20px rgba(74, 222, 128, 0.4),
-      inset 0 0 30px rgba(74, 222, 128, 0.06);
+      0 0 20px rgba(229, 231, 235, 0.4),
+      inset 0 0 30px rgba(229, 231, 235, 0.06);
   }
   .card:hover::before, .card:hover::after {
     width: 14px; height: 14px;
@@ -449,7 +430,6 @@
   .card .date {
     color: var(--crt-amber);
     font-family: "Consolas", monospace !important;
-    text-shadow: 0 0 4px rgba(251, 191, 36, 0.6);
   }
   .card .ticker-id {
     color: var(--tx-dim);
@@ -499,13 +479,12 @@
   .card .tag.dram, .card .tag.macro {
     color: var(--crt-amber);
     border-color: var(--crt-amber);
-    background: rgba(251, 191, 36, 0.08);
-    text-shadow: 0 0 4px rgba(251, 191, 36, 0.5);
+    background: rgba(229, 231, 235, 0.08);
   }
   .card .tag.semi, .card .tag.ai {
     color: var(--crt-green-bright);
     border-color: var(--crt-green);
-    background: rgba(74, 222, 128, 0.1);
+    background: rgba(229, 231, 235, 0.1);
   }
   .card .tag.dcf, .card .tag.earnings {
     color: var(--crt-green);
@@ -514,13 +493,12 @@
   .card .tag.taiwan {
     color: var(--crt-green-bright);
     border-color: var(--crt-green);
-    background: rgba(74, 222, 128, 0.1);
+    background: rgba(229, 231, 235, 0.1);
   }
   .card .tag.us {
     color: var(--crt-red);
     border-color: var(--crt-red);
-    background: rgba(239, 68, 68, 0.08);
-    text-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+    background: rgba(229, 231, 235, 0.08);
   }
   .card .open-arrow {
     color: var(--tx-dim);
@@ -534,7 +512,6 @@
     opacity: 1;
     color: var(--crt-amber);
     transform: translateX(4px);
-    text-shadow: 0 0 6px var(--crt-amber);
   }
 
   /* ============ 空狀態 ============ */
