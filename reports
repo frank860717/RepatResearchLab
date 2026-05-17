@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DDR4 / DDR5 現貨報價追蹤 — 2025/08 ~ 2026/05/15</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #07090f;
+    --panel: #0f1320;
+    --panel2: #141a2b;
+    --tx: #eef2ff;
+    --sub: #a8b8d0;
+    --mute: #7a8fa8;
+    --gold: #f5a623;
+    --green: #2ed68a;
+    --red: #f06060;
+    --blue: #4da8f8;
+    --purple: #b87aff;
+    --border: rgba(168, 184, 208, 0.15);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--tx);
+    font-family: "Microsoft JhengHei", "微軟正黑體", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 28px 60px; }
+
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 22px;
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: 30px;
+    margin: 0 0 8px;
+    color: var(--tx);
+    letter-spacing: 0.5px;
+  }
+  .hero .subtitle {
+    color: var(--sub);
+    font-size: 16px;
+    margin: 0;
+  }
+  .hero .meta {
+    color: var(--mute);
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .hero .meta strong { color: var(--gold); }
+
+  h2 {
+    font-size: 22px;
+    color: var(--tx);
+    border-left: 4px solid var(--gold);
+    padding-left: 12px;
+    margin: 38px 0 18px;
+  }
+  h3 {
+    font-size: 18px;
+    color: var(--sub);
+    margin: 24px 0 12px;
+  }
+
+  /* 摘要卡片 */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .card .label {
+    color: var(--mute);
+    font-size: 13px;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .card .value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--tx);
+    line-height: 1.2;
+  }
+  .card .unit { font-size: 14px; color: var(--sub); margin-left: 4px; }
+  .card .delta {
+    font-size: 14px;
+    margin-top: 6px;
+    color: var(--sub);
+  }
+  .delta.up { color: var(--red); }
+  .delta.down { color: var(--green); }
+  .delta.flat { color: var(--mute); }
+
+  /* 圖表容器 */
+  .chart-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 22px 18px;
+    margin: 16px 0 28px;
+  }
+  .chart-wrap .chart-title {
+    font-size: 17px;
+    color: var(--tx);
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+  .chart-wrap .chart-note {
+    color: var(--mute);
+    font-size: 13px;
+    margin: 0 0 14px;
+  }
+  .chart-box { position: relative; height: 420px; }
+
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+  }
+  th {
+    background: var(--panel2);
+    color: var(--sub);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; }
+  td.price { font-size: 22px; font-weight: 600; color: var(--gold); }
+  td.delta-up { color: var(--red); font-weight: 600; }
+  td.delta-down { color: var(--green); font-weight: 600; }
+  td.delta-flat { color: var(--mute); }
+
+  /* 重點區 */
+  .insight {
+    background: linear-gradient(180deg, rgba(245, 166, 35, 0.06), transparent);
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .insight strong { color: var(--gold); }
+  .insight.blue { background: linear-gradient(180deg, rgba(77, 168, 248, 0.06), transparent); border-left-color: var(--blue); }
+  .insight.blue strong { color: var(--blue); }
+  .insight.red { background: linear-gradient(180deg, rgba(240, 96, 96, 0.06), transparent); border-left-color: var(--red); }
+  .insight.red strong { color: var(--red); }
+  .insight.purple { background: linear-gradient(180deg, rgba(184, 122, 255, 0.06), transparent); border-left-color: var(--purple); }
+  .insight.purple strong { color: var(--purple); }
+
+  /* 來源清單 */
+  .sources {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .sources ul { margin: 6px 0; padding-left: 22px; }
+  .sources li { color: var(--sub); margin: 6px 0; font-size: 15px; }
+  .sources li strong { color: var(--tx); }
+  .sources li .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    background: var(--panel2);
+    color: var(--mute);
+    border: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .sources li .tag.primary { color: var(--gold); border-color: rgba(245, 166, 35, 0.3); }
+  .sources li .tag.cross { color: var(--blue); border-color: rgba(77, 168, 248, 0.3); }
+  .sources li .tag.retail { color: var(--purple); border-color: rgba(184, 122, 255, 0.3); }
+
+  /* 註腳 */
+  .footnote {
+    color: var(--mute);
+    font-size: 13px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* 標籤 */
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    margin-right: 6px;
+    font-weight: 600;
+  }
+  .badge.ddr5 { background: rgba(77, 168, 248, 0.15); color: var(--blue); border: 1px solid rgba(77, 168, 248, 0.3); }
+  .badge.ddr4 { background: rgba(245, 166, 35, 0.15); color: var(--gold); border: 1px solid rgba(245, 166, 35, 0.3); }
+  .badge.ddr3 { background: rgba(184, 122, 255, 0.15); color: var(--purple); border: 1px solid rgba(184, 122, 255, 0.3); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <h1>DDR4 / DDR5 現貨報價追蹤</h1>
+    <p class="subtitle">2025年8月 ~ 2026年5月15日 — 多源交叉比對 (TrendForce DRAMeXchange × Digitimes × Tom's Hardware × VersaLogic × Sourceability × 3DCenter)</p>
+    <p class="meta">最後更新: <strong>2026-05-15 18:10 (GMT+8) TrendForce 盤後價</strong></p>
+  </div>
+
+  <!-- 即時報價摘要 -->
+  <h2>當前現貨報價快照 (TrendForce 5/15 收盤)</h2>
+  <div class="summary-grid">
+    <div class="card">
+      <div class="label"><span class="badge ddr5">DDR5</span>16Gb 4800/5600</div>
+      <div class="value">$41.17<span class="unit">/ chip</span></div>
+      <div class="delta up">▲ +1.15% 當日</div>
+    </div>
+    <div class="card">
+      <div class="label"><span class="badge ddr5">DDR5</span>16Gb eTT</div>
+      <div class="value">$22.40<span class="unit">/ chip</span></div>
+      <div class="delta up">▲ +0.90% 當日</div>
+    </div>
+    <div class="card">
+      <div class="label"><span class="badge ddr4">DDR4</span>16Gb 3200</div>
+      <div class="value">$58.24<span class="unit">/ chip</span></div>
+      <div class="delta flat">— 持平</div>
+    </div>
+    <div class="card">
+      <div class="label"><span class="badge ddr4">DDR4</span>8Gb 3200</div>
+      <div class="value">$32.00<span class="unit">/ chip</span></div>
+      <div class="delta flat">— 持平</div>
+    </div>
+    <div class="card">
+      <div class="label"><span class="badge ddr4">DDR4</span>16Gb eTT</div>
+      <div class="value">$12.45<span class="unit">/ chip</span></div>
+      <div class="delta flat">— 持平</div>
+    </div>
+    <div class="card">
+      <div class="label"><span class="badge ddr4">DDR4</span>8Gb eTT</div>
+      <div class="value">$5.01<span class="unit">/ chip</span></div>
+      <div class="delta down">▼ -0.85% 當日</div>
+    </div>
+  </div>
+
+  <!-- 第一張折線圖: chip-level spot price -->
+  <h2>折線圖一: 顆粒現貨價走勢 (2025/08 ~ 2026/05)</h2>
+
+  <div class="chart-wrap">
+    <p class="chart-title">DDR4 vs DDR5 顆粒現貨均價走勢 (USD / chip)</p>
+    <p class="chart-note">資料來源: TrendForce DRAMeXchange 週度報價 (含 1Gx8 / 2Gx8 主流規格)。標記點為各機構公告之確認數據,中間連線為趨勢插值。</p>
+    <div class="chart-box"><canvas id="chipChart"></canvas></div>
+  </div>
+
+  <div class="insight">
+    <strong>關鍵觀察 — DDR5 兩個季度漲幅近 600%</strong><br>
+    DDR5 16Gb 顆粒從 2025/9/20 的 <strong>$6.84</strong> 一路衝到 2025/12 的 <strong>$27.20</strong> (3 個月漲 298%),再進一步漲至 2026/5/15 的 <strong>$41.17</strong>。從 2025/9 低點算起累計漲幅約 <strong>+502%</strong>。
+  </div>
+
+  <div class="insight blue">
+    <strong>關鍵觀察 — DDR4 16Gb 出現「價格倒掛」</strong><br>
+    DDR4 16Gb (2Gx8) 3200 從 2025/8 的 <strong>$9.17</strong> 飆到 2026/5/15 的 <strong>$58.24</strong>,9 個月漲幅約 <strong>+535%</strong>。日盤高點曾觸及 <strong>$88</strong>,部分配置已高於同容量 DDR5 顆粒,反映三星、美光退出 DDR4 產線後的供給斷層。
+  </div>
+
+  <div class="insight purple">
+    <strong>關鍵觀察 — DDR4 8Gb 主流規格已進入高檔盤整</strong><br>
+    DDR4 8Gb (1Gx8) 3200 自 2026/1/21 的 $30.30 升至 4/28 的 $32.48,5/5 微跌至 $32.40,5/15 進一步小回到 $32.00。三星暫凍 DDR4 報價,週度變動已收斂至 ±1% 內。
+  </div>
+
+  <!-- 第二張: 模組市場 -->
+  <h2>折線圖二: 模組市場 (UDIMM) 報價走勢</h2>
+
+  <div class="chart-wrap">
+    <p class="chart-title">DDR4 / DDR5 UDIMM 16GB 模組現貨均價 (USD / module)</p>
+    <p class="chart-note">資料來源: TrendForce 模組現貨盤面 + PCPartPicker / Wccftech / 3DCenter 零售追蹤。模組價反映通路、品牌、保固溢價。</p>
+    <div class="chart-box"><canvas id="moduleChart"></canvas></div>
+  </div>
+
+  <div class="insight red">
+    <strong>關鍵觀察 — 零售端 32GB DDR5 套組曾經四倍化</strong><br>
+    PCPartPicker 追蹤:DDR5-6000 32GB kit 從 2025/5 的 <strong>~$120</strong> 漲到 2025/12 的 <strong>~$410</strong> (+242%)。Corsair Vengeance 32GB DDR5 高峰時觸及 <strong>$490</strong>,2026/3 月回落至 <strong>$379</strong> (-23%),但 4 月 Tom's Hardware 觀察到德國市場 48GB DDR5-6400 再度上漲 16%。
+  </div>
+
+  <!-- 第三張: 對比合約價 vs 現貨價 -->
+  <h2>折線圖三: PC DRAM 合約價季度漲幅 (TrendForce 季報)</h2>
+
+  <div class="chart-wrap">
+    <p class="chart-title">PC DDR4 / DDR5 合約價 QoQ 漲幅 (%)</p>
+    <p class="chart-note">資料來源: TrendForce 季度合約價報告 (3Q25 ~ 2Q26F)。合約價反映原廠對 OEM 的長期協議價,通常滯後現貨價約一季。</p>
+    <div class="chart-box"><canvas id="contractChart"></canvas></div>
+  </div>
+
+  <div class="insight">
+    <strong>合約價週期解讀</strong><br>
+    Q1 2026 是這波超循環的<strong>合約價高點</strong>(QoQ +105~110%),Q2 2026 動能已收斂至 +35~48%。TrendForce 4/30 月報指出「商談氣氛降溫並脫離極端賣方市場」,但長約端共識仍維持<strong>緩漲</strong>,意味結構性缺貨延續至 2027~2028 新產能投放才會緩解。
+  </div>
+
+  <!-- 多源交叉比對表 -->
+  <h2>多源交叉比對 — 各家價格網站數據彙整</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>數據源</th>
+        <th>產品規格</th>
+        <th>最新報價 (USD)</th>
+        <th>日期</th>
+        <th>備註</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR5 16Gb 4800/5600 (spot)</td>
+        <td class="num price">$41.17</td>
+        <td>2026/5/15</td>
+        <td>盤平均;高 $52.50 / 低 $30.00</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR4 16Gb 3200 (spot)</td>
+        <td class="num price">$58.24</td>
+        <td>2026/5/15</td>
+        <td>盤平均;高 $70.00 / 低 $33.00</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR4 8Gb 1Gx8 3200 (spot)</td>
+        <td class="num price">$32.00</td>
+        <td>2026/5/15</td>
+        <td>盤平均;高 $52.80 / 低 $16.40</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR5 UDIMM 16GB module</td>
+        <td class="num price">$215.50</td>
+        <td>2026/5/4</td>
+        <td>週平均;週跌 -0.23%</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR4 UDIMM 16GB module</td>
+        <td class="num price">$148.44</td>
+        <td>2026/5/4</td>
+        <td>週平均;週跌 -0.27%</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 集邦</strong></td>
+        <td>DDR5 RDIMM 32GB (server)</td>
+        <td class="num price">$960.00</td>
+        <td>2026/5/4</td>
+        <td>伺服器規格;高 $1,180 / 低 $860</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 合約價</strong></td>
+        <td>DDR4 16GB SO-DIMM</td>
+        <td class="num price">$170.00</td>
+        <td>2026/3 月報</td>
+        <td>合約均價;均價 MoM +3.03%,低點 +7.69%</td>
+      </tr>
+      <tr>
+        <td><strong>TrendForce 合約價</strong></td>
+        <td>DDR5 8GB SO-DIMM</td>
+        <td class="num price">$75.00</td>
+        <td>2026/3 月報</td>
+        <td>合約均價;持平</td>
+      </tr>
+      <tr>
+        <td><strong>Digitimes / Tom's Hardware</strong></td>
+        <td>DDR4 16Gb 3200 (spot)</td>
+        <td class="num">$9.17</td>
+        <td>2025/8</td>
+        <td>對比基準點;DDR5 16Gb 同期 $5.99</td>
+      </tr>
+      <tr>
+        <td><strong>Sourceability / 業界調查</strong></td>
+        <td>DDR5 16Gb chip (contract)</td>
+        <td class="num">$6.84 → $27.20</td>
+        <td>2025/9 → 12</td>
+        <td>3 個月漲 298%</td>
+      </tr>
+      <tr>
+        <td><strong>3DCenter (德國零售)</strong></td>
+        <td>2×32GB DDR5-7200 kit</td>
+        <td class="num">+10% MoM</td>
+        <td>2026/4</td>
+        <td>48GB DDR5-6400 同期 +16%</td>
+      </tr>
+      <tr>
+        <td><strong>Tom's Hardware / Wccftech (美國零售)</strong></td>
+        <td>Corsair VENGEANCE 32GB DDR5</td>
+        <td class="num">$379.99</td>
+        <td>2026/3 月底</td>
+        <td>較峰值 $490 回檔 -22%</td>
+      </tr>
+      <tr>
+        <td><strong>chinastarmarket.cn (中國零售)</strong></td>
+        <td>16GB DDR5-5600/6000 module</td>
+        <td class="num">RMB 1,000</td>
+        <td>2026/3 月底</td>
+        <td>較 1~2 月峰值 RMB 1,300 回檔 -25~30%</td>
+      </tr>
+      <tr>
+        <td><strong>PCPartPicker (零售追蹤)</strong></td>
+        <td>DDR4-3200 16GB kit</td>
+        <td class="num">~$120</td>
+        <td>2025/12</td>
+        <td>較 2025/5 的 ~$50 漲 +140%</td>
+      </tr>
+      <tr>
+        <td><strong>VersaLogic (工控通路)</strong></td>
+        <td>個別 DDR4/DDR5 元件</td>
+        <td class="num">+700% vs 歷史</td>
+        <td>2026/5</td>
+        <td>32~40+ 週 lead time</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 來源清單 -->
+  <h2>查證資料來源 (依權威度)</h2>
+  <div class="sources">
+    <ul>
+      <li>
+        <strong>TrendForce 集邦科技 / DRAMeXchange</strong>
+        <span class="tag primary">主要來源</span>
+        — 每日現貨盤面、週度模組價、月度合約價;台灣記憶體市場研究權威,Samsung / SK Hynix / Micron 供應鏈定價基準。
+      </li>
+      <li>
+        <strong>Digitimes</strong>
+        <span class="tag cross">交叉比對</span>
+        — 2025/8 DDR4 16Gb $9.17 / DDR5 16Gb $5.99 對比點,記錄了 DDR4 > DDR5 倒掛現象起點。
+      </li>
+      <li>
+        <strong>Tom's Hardware</strong>
+        <span class="tag retail">零售追蹤</span>
+        — 2026 RAM Price Index 每日最低價追蹤,涵蓋 DDR4/DDR5 各容量;Corsair / G.SKILL 旗艦套組高峰價。
+      </li>
+      <li>
+        <strong>3DCenter (德國)</strong>
+        <span class="tag retail">零售追蹤</span>
+        — 月度 DDR5 零售價追蹤;3 月觀察到首見回檔 -7.2% MoM,4 月再轉漲。
+      </li>
+      <li>
+        <strong>Wccftech</strong>
+        <span class="tag retail">零售追蹤</span>
+        — 美國零售價快訊,2026/3 月觀察到 Corsair 32GB DDR5 從 $490 回檔至 $379。
+      </li>
+      <li>
+        <strong>VersaLogic Supply Chain Brief</strong>
+        <span class="tag cross">交叉比對</span>
+        — 工控與嵌入式通路觀點;指出個別元件較歷史價漲幅高達 +700%,lead time 達 32~40 週。
+      </li>
+      <li>
+        <strong>Sourceability</strong>
+        <span class="tag cross">交叉比對</span>
+        — 半導體採購供應鏈分析;記錄合約價時序 (Sep 2025 $6.84 → Dec $27.20)。
+      </li>
+      <li>
+        <strong>Counterpoint Research</strong>
+        <span class="tag cross">交叉比對</span>
+        — DRAM ASP 觀察,2025 全年 +50%,2026/Q1 預估再 +50%。
+      </li>
+      <li>
+        <strong>PCPartPicker</strong>
+        <span class="tag retail">零售追蹤</span>
+        — 北美零售套組歷史價序列。
+      </li>
+      <li>
+        <strong>chinastarmarket.cn</strong>
+        <span class="tag retail">零售追蹤</span>
+        — 中國電商通路 DDR5 零售追蹤。
+      </li>
+    </ul>
+  </div>
+
+  <!-- 結論 -->
+  <h2>結論 — 投資意涵</h2>
+
+  <div class="insight">
+    <strong>結構性供需缺口延續至 2027</strong><br>
+    TrendForce、Counterpoint、業界共識皆指向新產能 (Micron 紐約 fab、Samsung Texas、SK Hynix M15X) 要到 2027 下半年才會明顯放量;HBM 與 Server DDR5 仍將排擠 PC/Consumer DDR4/DDR5 產能。
+  </div>
+
+  <div class="insight blue">
+    <strong>短期動能已從「噴出」轉為「高檔盤整」</strong><br>
+    5 月 1~2 週 TrendForce 觀察:DDR4 1Gx8 3200 已連續兩週小幅回落 (-0.25% / -0.85%),Samsung 暫凍 DDR4 報價;DDR5 顆粒仍緩漲 +1.15%。短期已脫離極端賣方市場,但長約共識維持緩漲。
+  </div>
+
+  <div class="insight purple">
+    <strong>Q2 2026 合約價漲幅收斂至 +35~48%</strong><br>
+    TrendForce 4/30 預估:PC DDR5 合約價 Q2 漲幅由 +43% 上修至 +48%;PC DDR4 由 +40% 下修至 +35~40%。漲勢未止,但已不是 Q1 的 +105~110%「砍人式」漲幅。
+  </div>
+
+  <div class="insight red">
+    <strong>留意需求端反噬風險</strong><br>
+    TrendForce 預估 2026 全球 NB 出貨將下修至 <strong>-13.5%</strong> YoY (後續再下修至 -14.8%),HP CFO 已揭露記憶體+儲存占 PC BOM 從 15~18% 衝到 35%。終端漲價傳導 → 換機週期延後 → 庫存反向累積,是未來 2 季最需要追蹤的反向指標。
+  </div>
+
+  <p class="footnote">
+    📌 <strong>免責聲明:</strong> 本報告為公開資訊彙整,部分中間月份數據為趨勢插值 (已於圖表標記說明)。實際交易報價請以 TrendForce、Bloomberg、各通路即時報價為準。投資涉及風險,本報告非投資建議。<br>
+    📊 <strong>數據說明:</strong> 顆粒現貨價以 TrendForce DRAMeXchange 每日盤面均價為主;2025/8 DDR4 16Gb 起點數據引用 Digitimes via Tom's Hardware;模組價以 TrendForce 週度盤面為準;合約價為 TrendForce 月報。<br>
+    🗓️ <strong>報告生成日:</strong> 2026-05-17 (Asia/Taipei)
+  </p>
+
+</div>
+
+<script>
+// === 圖表共用設定 ===
+const tickColor = "#a8b8d0";
+const gridColor = "rgba(168, 184, 208, 0.08)";
+const labelColor = "#eef2ff";
+
+Chart.defaults.font.family = '"Microsoft JhengHei", "微軟正黑體", sans-serif';
+Chart.defaults.font.size = 13;
+Chart.defaults.color = tickColor;
+
+// === 圖一: 顆粒現貨價 ===
+const chipLabels = [
+  "2025/8", "2025/9", "2025/10", "2025/11", "2025/12",
+  "2026/1", "2026/2", "2026/3", "2026/4", "2026/5/15"
+];
+
+const ddr5_16Gb = [5.0, 6.84, 13.0, 24.83, 27.20, 32.0, 36.0, 39.0, 40.7, 41.17];
+const ddr4_16Gb = [9.17, 12.0, 18.0, 28.0, 38.0, 48.0, 54.0, 56.0, 58.0, 58.24];
+const ddr4_8Gb  = [3.0, 5.0, 10.0, 18.0, 25.0, 30.30, 31.5, 32.0, 32.48, 32.00];
+
+new Chart(document.getElementById("chipChart"), {
+  type: "line",
+  data: {
+    labels: chipLabels,
+    datasets: [
+      {
+        label: "DDR5 16Gb (2Gx8) 4800/5600",
+        data: ddr5_16Gb,
+        borderColor: "#4da8f8",
+        backgroundColor: "rgba(77, 168, 248, 0.1)",
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#4da8f8"
+      },
+      {
+        label: "DDR4 16Gb (2Gx8) 3200",
+        data: ddr4_16Gb,
+        borderColor: "#f5a623",
+        backgroundColor: "rgba(245, 166, 35, 0.1)",
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#f5a623"
+      },
+      {
+        label: "DDR4 8Gb (1Gx8) 3200",
+        data: ddr4_8Gb,
+        borderColor: "#b87aff",
+        backgroundColor: "rgba(184, 122, 255, 0.1)",
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#b87aff"
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: {
+        position: "top",
+        labels: { color: labelColor, padding: 14, font: { size: 13 } }
+      },
+      tooltip: {
+        backgroundColor: "rgba(15, 19, 32, 0.95)",
+        borderColor: "rgba(168, 184, 208, 0.2)",
+        borderWidth: 1,
+        titleColor: labelColor,
+        bodyColor: tickColor,
+        padding: 12,
+        callbacks: {
+          label: function(ctx) {
+            return ctx.dataset.label + ": $" + ctx.parsed.y.toFixed(2);
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: gridColor },
+        ticks: { color: tickColor }
+      },
+      y: {
+        grid: { color: gridColor },
+        ticks: {
+          color: tickColor,
+          callback: function(v) { return "$" + v; }
+        },
+        title: {
+          display: true,
+          text: "USD / chip",
+          color: tickColor,
+          font: { size: 13 }
+        }
+      }
+    }
+  }
+});
+
+// === 圖二: 模組市場 ===
+const moduleLabels = [
+  "2025/5", "2025/8", "2025/10", "2025/11", "2025/12",
+  "2026/1", "2026/2", "2026/3", "2026/4", "2026/5/4"
+];
+
+// DDR5 UDIMM 16GB module
+const ddr5_module = [55, 80, 110, 150, 220, 240, 235, 225, 218, 215.50];
+// DDR4 UDIMM 16GB module
+const ddr4_module = [50, 70, 95, 115, 130, 145, 155, 155, 150, 148.44];
+
+new Chart(document.getElementById("moduleChart"), {
+  type: "line",
+  data: {
+    labels: moduleLabels,
+    datasets: [
+      {
+        label: "DDR5 UDIMM 16GB 4800/5600",
+        data: ddr5_module,
+        borderColor: "#4da8f8",
+        backgroundColor: "rgba(77, 168, 248, 0.1)",
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: "#4da8f8"
+      },
+      {
+        label: "DDR4 UDIMM 16GB 3200",
+        data: ddr4_module,
+        borderColor: "#f5a623",
+        backgroundColor: "rgba(245, 166, 35, 0.1)",
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: "#f5a623"
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: {
+        position: "top",
+        labels: { color: labelColor, padding: 14, font: { size: 13 } }
+      },
+      tooltip: {
+        backgroundColor: "rgba(15, 19, 32, 0.95)",
+        borderColor: "rgba(168, 184, 208, 0.2)",
+        borderWidth: 1,
+        titleColor: labelColor,
+        bodyColor: tickColor,
+        padding: 12,
+        callbacks: {
+          label: function(ctx) {
+            return ctx.dataset.label + ": $" + ctx.parsed.y.toFixed(2);
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+      y: {
+        grid: { color: gridColor },
+        ticks: {
+          color: tickColor,
+          callback: function(v) { return "$" + v; }
+        },
+        title: {
+          display: true,
+          text: "USD / module",
+          color: tickColor,
+          font: { size: 13 }
+        }
+      }
+    }
+  }
+});
+
+// === 圖三: 合約價 QoQ % ===
+const contractLabels = ["3Q25", "4Q25", "1Q26", "2Q26F"];
+const ddr5_qoq = [8, 38, 105, 48];
+const ddr4_qoq = [13, 43, 110, 40];
+
+new Chart(document.getElementById("contractChart"), {
+  type: "line",
+  data: {
+    labels: contractLabels,
+    datasets: [
+      {
+        label: "PC DDR5 合約價 QoQ %",
+        data: ddr5_qoq,
+        borderColor: "#4da8f8",
+        backgroundColor: "rgba(77, 168, 248, 0.1)",
+        borderWidth: 3,
+        tension: 0.25,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: "#4da8f8"
+      },
+      {
+        label: "PC DDR4 合約價 QoQ %",
+        data: ddr4_qoq,
+        borderColor: "#f5a623",
+        backgroundColor: "rgba(245, 166, 35, 0.1)",
+        borderWidth: 3,
+        tension: 0.25,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: "#f5a623"
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: {
+        position: "top",
+        labels: { color: labelColor, padding: 14, font: { size: 13 } }
+      },
+      tooltip: {
+        backgroundColor: "rgba(15, 19, 32, 0.95)",
+        borderColor: "rgba(168, 184, 208, 0.2)",
+        borderWidth: 1,
+        titleColor: labelColor,
+        bodyColor: tickColor,
+        padding: 12,
+        callbacks: {
+          label: function(ctx) {
+            return ctx.dataset.label + ": +" + ctx.parsed.y + "%";
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+      y: {
+        grid: { color: gridColor },
+        ticks: {
+          color: tickColor,
+          callback: function(v) { return "+" + v + "%"; }
+        },
+        title: {
+          display: true,
+          text: "QoQ 漲幅 (%)",
+          color: tickColor,
+          font: { size: 13 }
+        }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
